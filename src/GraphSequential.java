@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 public class GraphSequential {
     int availableId=0;
-    ArrayList<SimpleEntry<String,ArrayList<SimpleEntry<String, Integer>>>> adjacencyList;
+    ArrayList<SimpleEntry<String,HashMap<Integer,SimpleEntry<String, Integer>>>> adjacencyList;
     HashMap<String,Integer> hash;
     public GraphSequential(){
         adjacencyList = new ArrayList<>();
@@ -28,48 +28,25 @@ public class GraphSequential {
             throw new RuntimeException(e);
         }
     }
-    public void addEdge(String from, String to, int weight){
-        if(!hash.containsKey(from)){
-            hash.put(from, availableId);
-            availableId++;
-            adjacencyList.add(hash.get(from), new SimpleEntry<>(from, new ArrayList<>()));
-        }
-        if(!hash.containsKey(to)){
-            hash.put(to,availableId);
-            availableId++;
-            adjacencyList.add(hash.get(to), new SimpleEntry<>(to, new ArrayList<>()));
-        }
+    public boolean addEdge(String from, String to, int weight){
+        int fromID=returnHash(from);
+        int toID=returnHash(to);
 
-
-        if(adjacencyList.get(hash.get(from)).getValue().size()<=hash.get(to)){
-            for (int i = adjacencyList.get(hash.get(from)).getValue().size(); i <= hash.get(to); i++) {
-                adjacencyList.get(hash.get(from)).getValue().add(i, null);
-            }
-        }
-        if (adjacencyList.get(hash.get(from)).getValue().get(hash.get(to))==null){
-            adjacencyList.get(hash.get(from)).getValue().add(hash.get(to),new SimpleEntry<>(to, weight));
-        }
-    }
-    public boolean addEdge(int from, String to, int weight){
-        if(!hash.containsKey(to)){
-            hash.put(to,availableId);
-            availableId++;
-            adjacencyList.add(hash.get(to), new SimpleEntry<>(to, new ArrayList<>()));
-        }
-
-        if(adjacencyList.get(from).getValue().size()<hash.get(to)){
-            for (int i = adjacencyList.get(from).getValue().size(); i <= hash.get(to); i++) {
-                adjacencyList.get(from).getValue().add(i, null);
-            }
-        }
-
-        if (adjacencyList.get(from).getValue().get(hash.get(to))==null){
-            adjacencyList.get(from).getValue().add(hash.get(to),new SimpleEntry<>(to, weight));
+        if (!adjacencyList.get(fromID).getValue().containsKey(toID)){
+            adjacencyList.get(fromID).getValue().put(toID,new SimpleEntry<>(to, weight));
             return true;
         }
         return false;
     }
-    public int returnHash(String address){
-            return hash.get(address);
+
+    public int returnHash(String address) {
+        if(!hash.containsKey(address)){
+            hash.put(address, availableId);
+            adjacencyList.add(new SimpleEntry<>(address, new HashMap<>()));
+            int value=availableId;
+            availableId++;
+            return value;
+        }
+        return hash.get(address);
     }
 }

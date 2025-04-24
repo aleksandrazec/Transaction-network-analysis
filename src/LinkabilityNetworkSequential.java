@@ -2,6 +2,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.AbstractMap.SimpleEntry;
@@ -32,37 +33,37 @@ public class LinkabilityNetworkSequential extends GraphSequential {
     }
     public void breadthFirstSearchLoop(GraphSequential ETN,int depth) {
         for(int i = 0; i< ETN.adjacencyList.size(); i++){
-            breadthFirstSearch(ETN, depth, i);
+            breadthFirstSearch(ETN, depth, ETN.adjacencyList.get(i).getKey());
         }
     }
 
-    public void breadthFirstSearch(GraphSequential ETN, int depth, int root){
-        Queue<SimpleEntry<Integer, Integer>> q=new LinkedList<>();
+    public void breadthFirstSearch(GraphSequential ETN, int depth, String rootAddress){
+        Queue<SimpleEntry<String, Integer>> q=new LinkedList<>();
         int currentDepth=0;
-        SimpleEntry<Integer, Integer> rootPair= new SimpleEntry<>(root, currentDepth);
+        SimpleEntry<String, Integer> rootPair= new SimpleEntry<>(rootAddress, currentDepth);
         q.add(rootPair);
         while (!q.isEmpty() && currentDepth<=depth){
-            SimpleEntry<Integer, Integer> currentPair=q.poll();
-            Integer parent=currentPair.getKey();
+            SimpleEntry<String, Integer> currentPair=q.poll();
+            String parent=currentPair.getKey();
+            int parentID=ETN.returnHash(parent);
             currentDepth=currentPair.getValue();
 
-            for (int i = 0; i < ETN.adjacencyList.get(parent).getValue().size(); i++) {
-                if(ETN.adjacencyList.get(parent).getValue().get(i)!=null) {
-                    if (currentDepth > 0) {
-                        if (addEdge(root, ETN.adjacencyList.get(parent).getValue().get(i).getKey(), currentDepth)) {
-                            try {
-                                bw.write(ETN.adjacencyList.get(root).getKey() + "," + ETN.adjacencyList.get(parent).getValue().get(i).getKey() + "," + currentDepth + "\n");
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
+            for (HashMap.Entry<Integer, SimpleEntry<String, Integer>> entry : ETN.adjacencyList.get(parentID).getValue().entrySet()) {
+                if (currentDepth > 0) {
+                    if (addEdge(rootAddress, entry.getValue().getKey(), currentDepth)) {
+                        try {
+                            bw.write(rootAddress + "," + entry.getValue().getKey() + "," + currentDepth + "\n");
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
                         }
                     }
-                    int child = returnHash(ETN.adjacencyList.get(parent).getValue().get(i).getKey());
-                    if (currentDepth + 1 <= depth) {
-                        SimpleEntry<Integer, Integer> newPair = new SimpleEntry<>(child, currentDepth + 1);
-                        q.add(newPair);
-                    }
                 }
+                String child = entry.getValue().getKey();
+                if (currentDepth + 1 <= depth) {
+                    SimpleEntry<String, Integer> newPair = new SimpleEntry<>(child, currentDepth + 1);
+                    q.add(newPair);
+                }
+
             }
         }
 
