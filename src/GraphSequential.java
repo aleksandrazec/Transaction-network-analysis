@@ -10,9 +10,11 @@ public class GraphSequential {
     int availableId=0;
     ArrayList<SimpleEntry<String,HashMap<Integer,SimpleEntry<String, Integer>>>> adjacencyList;
     HashMap<String,Integer> hash;
+
     public GraphSequential(){
         adjacencyList = new ArrayList<>();
         hash = new HashMap<>();
+
     }
     public void readFromFile(File f, int from, int to){
         String line;
@@ -32,11 +34,9 @@ public class GraphSequential {
         int fromID=returnHash(from);
         int toID=returnHash(to);
 
-        if (!adjacencyList.get(fromID).getValue().containsKey(toID)){
             adjacencyList.get(fromID).getValue().put(toID,new SimpleEntry<>(to, weight));
             return true;
-        }
-        return false;
+
     }
 
     public int returnHash(String address) {

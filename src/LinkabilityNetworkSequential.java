@@ -10,6 +10,7 @@ import java.util.AbstractMap.SimpleEntry;
 
 public class LinkabilityNetworkSequential extends GraphSequential {
     BufferedWriter bw;
+    int[] weights;
     public LinkabilityNetworkSequential(GraphSequential ETN, int depth, File f){
         super();
         try {
@@ -23,6 +24,11 @@ public class LinkabilityNetworkSequential extends GraphSequential {
             throw new RuntimeException(e);
         }
 
+        weights=new int[depth+1];
+        for (int i = 0; i < depth+1; i++) {
+            weights[i]=0;
+        }
+
         breadthFirstSearchLoop(ETN, depth);
 
         try {
@@ -30,6 +36,12 @@ public class LinkabilityNetworkSequential extends GraphSequential {
             bw.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public void printWeights(){
+        for (int i = 1; i < weights.length; i++) {
+            System.out.println("Number of links of weight "+i+" is: "+weights[i]);
         }
     }
     public void breadthFirstSearchLoop(GraphSequential ETN,int depth) {
@@ -53,13 +65,14 @@ public class LinkabilityNetworkSequential extends GraphSequential {
 
             for (HashMap.Entry<Integer, SimpleEntry<String, Integer>> entry : ETN.adjacencyList.get(parentID).getValue().entrySet()) {
                 if (currentDepth > 0) {
-                   if (addEdge(rootAddress, entry.getValue().getKey(), currentDepth)) {
+                   //if (addEdge(rootAddress, entry.getValue().getKey(), currentDepth)) {
                         try {
                             bw.write(rootAddress + "," + entry.getValue().getKey() + "," + currentDepth + "\n");
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
-                    }
+                        weights[currentDepth]++;
+                    //}
 
                 }
                 String child = entry.getValue().getKey();

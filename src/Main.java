@@ -46,6 +46,7 @@ public class Main {
         GraphSequential ETN=new GraphSequential();
         ETN.readFromFile(fileToRead, columnFrom, columnTo);
         LinkabilityNetworkSequential l=new LinkabilityNetworkSequential(ETN, depth, fileToWrite);
+        l.printWeights();
         long end=System.currentTimeMillis();
         System.out.println("Run-time: "+(end-start)+"ms");
     }
