@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.AbstractMap.SimpleEntry;
@@ -39,6 +40,8 @@ public class LinkabilityNetworkSequential extends GraphSequential {
 
     public void breadthFirstSearch(GraphSequential ETN, int depth, String rootAddress){
         Queue<SimpleEntry<String, Integer>> q=new LinkedList<>();
+        HashSet<String> visited= new HashSet<String>();
+        visited.add(rootAddress);
         int currentDepth=0;
         SimpleEntry<String, Integer> rootPair= new SimpleEntry<>(rootAddress, currentDepth);
         q.add(rootPair);
@@ -50,20 +53,23 @@ public class LinkabilityNetworkSequential extends GraphSequential {
 
             for (HashMap.Entry<Integer, SimpleEntry<String, Integer>> entry : ETN.adjacencyList.get(parentID).getValue().entrySet()) {
                 if (currentDepth > 0) {
-                    if (addEdge(rootAddress, entry.getValue().getKey(), currentDepth)) {
+                   if (addEdge(rootAddress, entry.getValue().getKey(), currentDepth)) {
                         try {
                             bw.write(rootAddress + "," + entry.getValue().getKey() + "," + currentDepth + "\n");
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
                     }
+
                 }
                 String child = entry.getValue().getKey();
-                if (currentDepth + 1 <= depth) {
-                    SimpleEntry<String, Integer> newPair = new SimpleEntry<>(child, currentDepth + 1);
-                    q.add(newPair);
+                if (!visited.contains(child)) {
+                    if (currentDepth + 1 <= depth) {
+                        SimpleEntry<String, Integer> newPair = new SimpleEntry<>(child, currentDepth + 1);
+                        q.add(newPair);
+                        visited.add(entry.getValue().getKey());
+                    }
                 }
-
             }
         }
 
