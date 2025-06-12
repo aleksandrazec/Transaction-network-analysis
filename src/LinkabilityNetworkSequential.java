@@ -1,7 +1,4 @@
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -11,8 +8,12 @@ import java.util.AbstractMap.SimpleEntry;
 public class LinkabilityNetworkSequential extends GraphSequential {
     BufferedWriter bw;
     int[] weights;
-    public LinkabilityNetworkSequential(GraphSequential ETN, int depth, File f){
+    HashSet<String> relevantAddresses=new HashSet<>();
+    public LinkabilityNetworkSequential(GraphSequential ETN, int depth, File f, File NFT, int from, int to){
         super();
+
+        identifyRelevantAddresses(NFT, from, to);
+
         try {
             bw=new BufferedWriter(new FileWriter(f));
         } catch (IOException e) {
@@ -38,7 +39,21 @@ public class LinkabilityNetworkSequential extends GraphSequential {
             throw new RuntimeException(e);
         }
     }
-
+    public void identifyRelevantAddresses(File f, int from, int to){
+        String line;
+        try
+        {
+            BufferedReader br = new BufferedReader(new FileReader(f));
+            while ((line = br.readLine()) != null)
+            {
+                String[] values = line.split(",");
+                relevantAddresses.add(values[from]);
+                relevantAddresses.add(values[to]);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public void printWeights(){
         for (int i = 1; i < weights.length; i++) {
             System.out.println("Number of links of weight "+i+" is: "+weights[i]);
@@ -52,7 +67,7 @@ public class LinkabilityNetworkSequential extends GraphSequential {
 
     public void breadthFirstSearch(GraphSequential ETN, int depth, String rootAddress){
         Queue<SimpleEntry<String, Integer>> q=new LinkedList<>();
-        HashSet<String> visited= new HashSet<String>();
+        HashSet<String> visited= new HashSet<>();
         visited.add(rootAddress);
         int currentDepth=0;
         SimpleEntry<String, Integer> rootPair= new SimpleEntry<>(rootAddress, currentDepth);
@@ -66,12 +81,14 @@ public class LinkabilityNetworkSequential extends GraphSequential {
             for (HashMap.Entry<Integer, SimpleEntry<String, Integer>> entry : ETN.adjacencyList.get(parentID).getValue().entrySet()) {
                 if (currentDepth > 0) {
                    //if (addEdge(rootAddress, entry.getValue().getKey(), currentDepth)) {
+                    if (relevantAddresses.contains(parent) || relevantAddresses.contains(entry.getValue().getKey())){
                         try {
                             bw.write(rootAddress + "," + entry.getValue().getKey() + "," + currentDepth + "\n");
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
                         weights[currentDepth]++;
+                    }
                     //}
 
                 }
