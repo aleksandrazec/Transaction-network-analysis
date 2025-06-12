@@ -2,7 +2,7 @@ import java.io.File;
 import java.util.Scanner;
 
 public class Main {
-    static File ETNexample=new File("./linkabilityNetworksData/prog3ETNsample.csv");
+    static File ETNExample=new File("./linkabilityNetworksData/prog3ETNsample.csv");
     static File blacklist=new File("./linkabilityNetworksData/blacklist");
     static File NFTTransfers=new File("./linkabilityNetworksData/boredapeyachtclub.csv");
     static int columnFromETN=6;
@@ -28,7 +28,7 @@ public class Main {
         } catch (Exception e) {
             System.out.println("Unexpected error occurred.");
         }
-        Mode currentMode;
+        Mode currentMode=null;
         switch (input) {
             case 1 -> currentMode = Mode.Sequential;
             case 2, 3 -> {
@@ -47,14 +47,23 @@ public class Main {
         } catch (Exception e) {
             System.out.println("Unexpected error occurred.");
         }
+        switch (currentMode){
+            case Sequential -> {
+                long start = System.currentTimeMillis();
+                GraphSequential ETN = new GraphSequential(blacklist);
+                ETN.readFromFile(ETNExample, columnFromETN, columnToETN);
+                LinkabilityNetworkSequential l = new LinkabilityNetworkSequential(ETN, depth, fileToWrite, NFTTransfers, columnFromNFT, columnToNFT);
+                l.printWeights();
+                long end = System.currentTimeMillis();
+                System.out.println("Run-time: " + (end - start) + "ms");
+            }
+            case Parallel -> {
 
-        long start = System.currentTimeMillis();
-        GraphSequential ETN = new GraphSequential();
-        ETN.readFromFile(ETNexample, columnFromETN, columnToETN);
-        ETN.removeBlacklist(blacklist);
-        LinkabilityNetworkSequential l = new LinkabilityNetworkSequential(ETN, depth, fileToWrite, NFTTransfers, columnFromNFT, columnToNFT);
-        l.printWeights();
-        long end = System.currentTimeMillis();
-        System.out.println("Run-time: " + (end - start) + "ms");
+            }
+            case Distributed -> {
+                
+            }
+        }
+
     }
 }
