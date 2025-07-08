@@ -14,6 +14,8 @@ public class GraphParallel {
     static int availableId=0;
     static ArrayList<SimpleEntry<String, HashMap<Integer, SimpleEntry<String, Integer>>>> adjacencyList;
     static HashMap<String,Integer> hash;
+    static final Integer hashLock = null;
+    static final Integer addressLock=null;
     static HashSet<String> irrelevantAddresses=new HashSet<>();
     static ExecutorService threadPool = Executors.newCachedThreadPool();
     static Semaphore blacklistSemaphore;
@@ -29,7 +31,7 @@ public class GraphParallel {
     }
     public void createBlacklist(File blacklist) {
         File[] blacklistFiles = blacklist.listFiles();
-        blacklistSize=blacklistFiles.length;
+        blacklistSize= blacklistFiles != null ? blacklistFiles.length : 0;
         blacklistSemaphore = new Semaphore(blacklistSize);
         for (File file : blacklistFiles) {
             threadPool.submit(new BlacklistParallel(file));
@@ -56,9 +58,9 @@ public class GraphParallel {
     }
     static public int returnHash(String address) {
         if(!hash.containsKey(address)){
-            synchronized (hash) {
+            synchronized (hashLock) {
                 hash.put(address, availableId);
-                synchronized (adjacencyList) {
+                synchronized (addressLock) {
                     adjacencyList.add(new SimpleEntry<>(address, new HashMap<>()));
                 }
                 int value = availableId;

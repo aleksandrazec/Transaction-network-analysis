@@ -14,7 +14,7 @@ public class EdgeParallel implements Runnable {
         if (!GraphParallel.irrelevantAddresses.contains(from) && !GraphParallel.irrelevantAddresses.contains(to)) {
             int fromID = GraphParallel.returnHash(from);
             int toID = GraphParallel.returnHash(to);
-            synchronized (GraphParallel.adjacencyList) {
+            synchronized (GraphParallel.addressLock) {
                 GraphParallel.adjacencyList.get(fromID).getValue().put(toID, new AbstractMap.SimpleEntry<>(to, weight));
             }
         }

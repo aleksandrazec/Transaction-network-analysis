@@ -26,7 +26,7 @@ public class BlacklistParallel implements Runnable {
         JSONArray addressArray = new JSONArray(content);
         for (int i = 0; i < addressArray.length(); i++) {
             String addressToRemove = addressArray.getString(i);
-            synchronized (GraphParallel.irrelevantAddresses) {
+            synchronized (GraphParallel.addressLock) {
                 GraphParallel.irrelevantAddresses.add(addressToRemove);
             }
         }
