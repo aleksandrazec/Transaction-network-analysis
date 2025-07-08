@@ -39,6 +39,7 @@ public class LinkabilityNetworkSequential extends GraphSequential {
             throw new RuntimeException(e);
         }
     }
+
     public void identifyRelevantAddresses(File f, int from, int to){
         String line;
         try
@@ -54,6 +55,7 @@ public class LinkabilityNetworkSequential extends GraphSequential {
             throw new RuntimeException(e);
         }
     }
+
     public void printWeights(){
         for (int i = 1; i < weights.length; i++) {
             System.out.println("Number of links of weight "+i+" is: "+weights[i]);
@@ -61,7 +63,9 @@ public class LinkabilityNetworkSequential extends GraphSequential {
     }
     public void breadthFirstSearchLoop(GraphSequential ETN,int depth) {
         for(int i = 0; i< ETN.adjacencyList.size(); i++){
-            breadthFirstSearch(ETN, depth, ETN.adjacencyList.get(i).getKey());
+            if(relevantAddresses.contains(ETN.adjacencyList.get(i).getKey())){
+                breadthFirstSearch(ETN, depth, ETN.adjacencyList.get(i).getKey());
+            }
         }
     }
 
@@ -79,11 +83,13 @@ public class LinkabilityNetworkSequential extends GraphSequential {
             currentDepth=currentPair.getValue();
 
             for (HashMap.Entry<Integer, SimpleEntry<String, Integer>> entry : ETN.adjacencyList.get(parentID).getValue().entrySet()) {
+                String child = entry.getValue().getKey();
                 if (currentDepth > 0) {
                    //if (addEdge(rootAddress, entry.getValue().getKey(), currentDepth)) {
-                    if (relevantAddresses.contains(parent) && relevantAddresses.contains(entry.getValue().getKey())){
+                    if (relevantAddresses.contains(child)){
                         try {
-                            bw.write(rootAddress + "," + entry.getValue().getKey() + "," + currentDepth + "\n");
+                            bw.write(rootAddress + "," + child + "," + currentDepth + "\n");
+                            System.out.println(rootAddress + "," + child + "," + currentDepth);
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
@@ -92,12 +98,11 @@ public class LinkabilityNetworkSequential extends GraphSequential {
                     //}
 
                 }
-                String child = entry.getValue().getKey();
                 if (!visited.contains(child)) {
                     if (currentDepth + 1 <= depth) {
                         SimpleEntry<String, Integer> newPair = new SimpleEntry<>(child, currentDepth + 1);
                         q.add(newPair);
-                        visited.add(entry.getValue().getKey());
+                        visited.add(child);
                     }
                 }
             }

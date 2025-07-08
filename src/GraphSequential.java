@@ -51,7 +51,7 @@ public class GraphSequential {
                 JSONArray addressArray = new JSONArray(content);
                 for (int i = 0; i < addressArray.length(); i++) {
                     String addressToRemove = addressArray.getString(i);
-                    System.out.println(addressToRemove);
+//                    System.out.println(addressToRemove);
                     irrelevantAddresses.add(addressToRemove);
                 }
             }
@@ -62,6 +62,7 @@ public class GraphSequential {
             int fromID=returnHash(from);
             int toID=returnHash(to);
             adjacencyList.get(fromID).getValue().put(toID,new SimpleEntry<>(to, weight));
+//            System.out.println("from "+fromID+" to "+toID);
         }
     }
     public void removeEdge(String from, String to){

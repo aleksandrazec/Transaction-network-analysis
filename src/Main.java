@@ -5,10 +5,10 @@ public class Main {
     static File ETNExample=new File("./linkabilityNetworksData/prog3ETNsample.csv");
     static File blacklist=new File("./linkabilityNetworksData/blacklist");
     static File NFTTransfers=new File("./linkabilityNetworksData/boredapeyachtclub.csv");
-    static int columnFromETN=6;
-    static int columnToETN=7;
-    static int columnFromNFT=5;
-    static int columnToNFT=6;
+    static int columnFromETN=5;
+    static int columnToETN=6;
+    static int columnFromNFT=4;
+    static int columnToNFT=5;
     static File fileToWrite=new File("./linkabilityNetwork.csv");
     enum Mode{
         Sequential,
