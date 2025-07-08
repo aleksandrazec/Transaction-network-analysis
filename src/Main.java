@@ -58,7 +58,11 @@ public class Main {
                 System.out.println("Run-time: " + (end - start) + "ms");
             }
             case Parallel -> {
-
+                long start = System.currentTimeMillis();
+                GraphParallel ETN = new GraphParallel(blacklist);
+                ETN.readFromFile(ETNExample, columnFromETN, columnToETN);
+                long end = System.currentTimeMillis();
+                System.out.println("Run-time: " + (end - start) + "ms");
             }
             case Distributed -> {
                 
