@@ -1,5 +1,3 @@
-import org.json.JSONArray;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -15,20 +13,17 @@ public class BlacklistParallel implements Runnable {
     @Override
     public void run() {
 
-        System.out.println("in thread "+file.getName());
-
         String content;
         try {
             content = Files.readString(file.toPath(), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        JSONArray addressArray = new JSONArray(content);
-        for (int i = 0; i < addressArray.length(); i++) {
-            String addressToRemove = addressArray.getString(i);
-            graph.addIrrelevantAddress(addressToRemove);
+        content=content.substring(1,content.length()-1).replaceAll("\\s+","");
+        String[] addressArray = content.split(",");
+        for (String addressToRemove : addressArray ) {
+            graph.addIrrelevantAddress(addressToRemove.substring(1,addressToRemove.length()-1));
         }
         GraphParallel.blacklistSemaphore.release();
-//        System.out.println("out thread "+file.getName());
     }
 }

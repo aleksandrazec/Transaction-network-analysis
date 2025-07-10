@@ -1,3 +1,5 @@
+import Distributed.GraphDistributed;
+
 import java.io.File;
 import java.util.Scanner;
 
@@ -32,10 +34,7 @@ public class Main {
         switch (input) {
             case 1 -> currentMode = Mode.Sequential;
             case 2 -> currentMode = Mode.Parallel;
-            case 3 -> {
-                System.out.println("Sorry, this mode hasn't been implemented yet.");
-                System.exit(0);
-            }
+            case 3 -> currentMode = Mode.Distributed;
             default -> {
                 System.out.println("Please enter a valid mode.");
                 System.exit(0);
@@ -51,10 +50,8 @@ public class Main {
         switch (currentMode){
             case Sequential -> {
                 long start = System.currentTimeMillis();
-                GraphSequential ETN = new GraphSequential(blacklist);
-                ETN.readFromFile(ETNExample, columnFromETN, columnToETN);
+                GraphSequential ETN = new GraphSequential(blacklist,ETNExample, columnFromETN, columnToETN);
                 LinkabilityNetworkSequential l = new LinkabilityNetworkSequential(ETN, depth, fileToWrite, NFTTransfers, columnFromNFT, columnToNFT);
-                l.printWeights();
                 long end = System.currentTimeMillis();
                 System.out.println("Run-time: " + (end - start) + "ms");
             }
@@ -66,7 +63,10 @@ public class Main {
                 System.out.println("Run-time: " + (end - start) + "ms");
             }
             case Distributed -> {
-                
+                long start = System.currentTimeMillis();
+
+                long end = System.currentTimeMillis();
+                System.out.println("Run-time: " + (end - start) + "ms");
             }
         }
 

@@ -1,4 +1,3 @@
-import org.json.JSONArray;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -19,10 +18,11 @@ public class GraphSequential {
         adjacencyList = new ArrayList<>();
         hash = new HashMap<>();
     }
-    public GraphSequential(File blacklist){
+    public GraphSequential(File blacklist, File ETNExample, int columnFromETN, int columnToETN){
         adjacencyList = new ArrayList<>();
         hash = new HashMap<>();
         createBlacklist(blacklist);
+        readFromFile(ETNExample, columnFromETN, columnToETN);
     }
     public void readFromFile(File f, int from, int to){
         String line;
@@ -48,11 +48,10 @@ public class GraphSequential {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                JSONArray addressArray = new JSONArray(content);
-                for (int i = 0; i < addressArray.length(); i++) {
-                    String addressToRemove = addressArray.getString(i);
-//                    System.out.println(addressToRemove);
-                    irrelevantAddresses.add(addressToRemove);
+                content=content.substring(1,content.length()-1).replaceAll("\\s+","");
+                String[] addressArray = content.split(",");
+                for (String addressToRemove : addressArray ) {
+                    irrelevantAddresses.add(addressToRemove.substring(1,addressToRemove.length()-1));
                 }
             }
         }
@@ -62,7 +61,6 @@ public class GraphSequential {
             int fromID=returnHash(from);
             int toID=returnHash(to);
             adjacencyList.get(fromID).getValue().put(toID,new SimpleEntry<>(to, weight));
-//            System.out.println("from "+fromID+" to "+toID);
         }
     }
     public void removeEdge(String from, String to){

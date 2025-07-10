@@ -34,6 +34,7 @@ public class LinkabilityNetworkSequential extends GraphSequential {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        printWeights();
     }
 
     public void identifyRelevantAddresses(File f, int from, int to){

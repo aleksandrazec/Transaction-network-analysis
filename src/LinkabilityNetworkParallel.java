@@ -84,7 +84,6 @@ public class LinkabilityNetworkParallel extends GraphParallel{
         synchronized (bwLock){
             try {
                 bw.write(from + "," + to + "," + depth + "\n");
-//                System.out.println("Linkability edge from "+from + " to " + to + ", depth " + depth);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

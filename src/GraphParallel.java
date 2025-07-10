@@ -30,7 +30,6 @@ public class GraphParallel {
     public GraphParallel(File blacklist, File ETNExample, int columnFromETN, int columnToETN){
         adjacencyList = new ArrayList<>();
         hash = new HashMap<>();
-        System.out.println("Loading Blacklist");
         createBlacklist(blacklist);
         try {
             blacklistSemaphore.acquire(blacklistSize);
@@ -40,10 +39,8 @@ public class GraphParallel {
         readFromFile(ETNExample, columnFromETN, columnToETN);
     }
     public void createBlacklist(File blacklist) {
-        System.out.println("Creating Blacklist");
         File[] blacklistFiles = blacklist.listFiles();
         blacklistSize= blacklistFiles != null ? blacklistFiles.length : 0;
-        System.out.println("Blacklist size: " + blacklistSize);
         blacklistSemaphore = new Semaphore(0);
         if (blacklistFiles != null) {
             for (File file : blacklistFiles) {
@@ -77,7 +74,6 @@ public class GraphParallel {
 
         try {
             graphSemaphore.acquire(lines);
-            System.out.println("largest id is : "+availableId);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -99,15 +95,11 @@ public class GraphParallel {
     public void addEdge(int fromID, int toID, String to, int weight){
         synchronized (addressLock){
             adjacencyList.get(fromID).getValue().put(toID, new SimpleEntry<>(to, weight));
-//            System.out.println("edge "+ fromID+ " to "+ toID +" added");
         }
     }
     public void addIrrelevantAddress(String addressToRemove){
-//        System.out.println("In function "+ addressToRemove);
         synchronized (addressLock){
-//            System.out.println("Adding irrelevant address "+ addressToRemove);
             irrelevantAddresses.add(addressToRemove);
-//            System.out.println(addressToRemove+" added to blacklist");
         }
     }
     public boolean isRelevantAddress(String address){
