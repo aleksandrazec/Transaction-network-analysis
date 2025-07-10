@@ -31,7 +31,8 @@ public class Main {
         Mode currentMode=null;
         switch (input) {
             case 1 -> currentMode = Mode.Sequential;
-            case 2, 3 -> {
+            case 2 -> currentMode = Mode.Parallel;
+            case 3 -> {
                 System.out.println("Sorry, this mode hasn't been implemented yet.");
                 System.exit(0);
             }
@@ -59,8 +60,11 @@ public class Main {
             }
             case Parallel -> {
                 long start = System.currentTimeMillis();
-                GraphParallel ETN = new GraphParallel(blacklist);
-                ETN.readFromFile(ETNExample, columnFromETN, columnToETN);
+                GraphParallel ETN = new GraphParallel(blacklist, ETNExample, columnFromETN, columnToETN);
+                System.out.println("--------------------------------------------------------------------------------------");
+
+                System.out.println("made it to linkability network");
+                LinkabilityNetworkParallel l=new LinkabilityNetworkParallel(ETN, depth,  fileToWrite, NFTTransfers, columnFromNFT, columnToNFT);
                 long end = System.currentTimeMillis();
                 System.out.println("Run-time: " + (end - start) + "ms");
             }

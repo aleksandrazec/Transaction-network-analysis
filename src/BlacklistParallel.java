@@ -7,16 +7,16 @@ import java.nio.file.Files;
 
 public class BlacklistParallel implements Runnable {
     File file;
-    BlacklistParallel(File file) {
+    GraphParallel graph;
+    public BlacklistParallel(File file, GraphParallel graph) {
         this.file = file;
+        this.graph = graph;
     }
     @Override
     public void run() {
-        try {
-            GraphParallel.blacklistSemaphore.acquire();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+
+        System.out.println("in thread "+file.getName());
+
         String content;
         try {
             content = Files.readString(file.toPath(), StandardCharsets.UTF_8);
@@ -26,10 +26,9 @@ public class BlacklistParallel implements Runnable {
         JSONArray addressArray = new JSONArray(content);
         for (int i = 0; i < addressArray.length(); i++) {
             String addressToRemove = addressArray.getString(i);
-            synchronized (GraphParallel.addressLock) {
-                GraphParallel.irrelevantAddresses.add(addressToRemove);
-            }
+            graph.addIrrelevantAddress(addressToRemove);
         }
         GraphParallel.blacklistSemaphore.release();
+        System.out.println("out thread "+file.getName());
     }
 }

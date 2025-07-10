@@ -16,10 +16,6 @@ public class LinkabilityNetworkSequential extends GraphSequential {
 
         try {
             bw=new BufferedWriter(new FileWriter(f));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        try {
             bw.write("addressFrom,addressTo,weight\n");
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -89,7 +85,7 @@ public class LinkabilityNetworkSequential extends GraphSequential {
                     if (relevantAddresses.contains(child)){
                         try {
                             bw.write(rootAddress + "," + child + "," + currentDepth + "\n");
-                            System.out.println(rootAddress + "," + child + "," + currentDepth);
+//                            System.out.println(rootAddress + "," + child + "," + currentDepth);
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
