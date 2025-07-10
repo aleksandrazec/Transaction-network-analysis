@@ -17,7 +17,7 @@ public class GraphParallel {
     final Object hashLock = new Object();
     final Object addressLock=new Object();
     HashSet<String> irrelevantAddresses=new HashSet<>();
-    static ExecutorService threadPool = Executors.newCachedThreadPool();
+    static ExecutorService threadPool = Executors.newWorkStealingPool();
     static Semaphore blacklistSemaphore;
     static Semaphore graphSemaphore;
     int lines = 0;
@@ -44,12 +44,7 @@ public class GraphParallel {
         File[] blacklistFiles = blacklist.listFiles();
         blacklistSize= blacklistFiles != null ? blacklistFiles.length : 0;
         System.out.println("Blacklist size: " + blacklistSize);
-        blacklistSemaphore = new Semaphore(blacklistSize);
-        try {
-            GraphParallel.blacklistSemaphore.acquire(blacklistSize);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        blacklistSemaphore = new Semaphore(0);
         if (blacklistFiles != null) {
             for (File file : blacklistFiles) {
                 threadPool.submit(new BlacklistParallel(file, this));
@@ -88,8 +83,8 @@ public class GraphParallel {
         }
     }
     public int returnHash(String address) {
-        if(!hash.containsKey(address)){
-            synchronized (hashLock) {
+        synchronized (hashLock) {
+            if(!hash.containsKey(address)){
                 hash.put(address, availableId);
                 synchronized (addressLock) {
                     adjacencyList.add(new SimpleEntry<>(address, new HashMap<>()));
@@ -98,21 +93,21 @@ public class GraphParallel {
                 availableId++;
                 return value;
             }
+            return hash.get(address);
         }
-        return hash.get(address);
     }
     public void addEdge(int fromID, int toID, String to, int weight){
         synchronized (addressLock){
             adjacencyList.get(fromID).getValue().put(toID, new SimpleEntry<>(to, weight));
-            System.out.println("edge "+ fromID+ " to "+ toID +" added");
+//            System.out.println("edge "+ fromID+ " to "+ toID +" added");
         }
     }
     public void addIrrelevantAddress(String addressToRemove){
-        System.out.println("In function "+ addressToRemove);
+//        System.out.println("In function "+ addressToRemove);
         synchronized (addressLock){
-            System.out.println("Adding irrelevant address "+ addressToRemove);
+//            System.out.println("Adding irrelevant address "+ addressToRemove);
             irrelevantAddresses.add(addressToRemove);
-            System.out.println(addressToRemove+" added to blacklist");
+//            System.out.println(addressToRemove+" added to blacklist");
         }
     }
     public boolean isRelevantAddress(String address){

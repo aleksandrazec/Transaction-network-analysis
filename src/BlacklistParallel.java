@@ -29,6 +29,6 @@ public class BlacklistParallel implements Runnable {
             graph.addIrrelevantAddress(addressToRemove);
         }
         GraphParallel.blacklistSemaphore.release();
-        System.out.println("out thread "+file.getName());
+//        System.out.println("out thread "+file.getName());
     }
 }

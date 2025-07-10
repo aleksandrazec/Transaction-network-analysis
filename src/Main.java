@@ -61,9 +61,6 @@ public class Main {
             case Parallel -> {
                 long start = System.currentTimeMillis();
                 GraphParallel ETN = new GraphParallel(blacklist, ETNExample, columnFromETN, columnToETN);
-                System.out.println("--------------------------------------------------------------------------------------");
-
-                System.out.println("made it to linkability network");
                 LinkabilityNetworkParallel l=new LinkabilityNetworkParallel(ETN, depth,  fileToWrite, NFTTransfers, columnFromNFT, columnToNFT);
                 long end = System.currentTimeMillis();
                 System.out.println("Run-time: " + (end - start) + "ms");
