@@ -64,7 +64,7 @@ public class Main {
             }
             case Distributed -> {
                 long start = System.currentTimeMillis();
-
+//                GraphDistributed ETN=new GraphDistributed(args, blacklist);
                 long end = System.currentTimeMillis();
                 System.out.println("Run-time: " + (end - start) + "ms");
             }
