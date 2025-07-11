@@ -63,12 +63,7 @@ public class GraphSequential {
             adjacencyList.get(fromID).getValue().put(toID,new SimpleEntry<>(to, weight));
         }
     }
-    public void removeEdge(String from, String to){
-        int fromID=returnHash(from);
-        int toID=returnHash(to);
-        adjacencyList.get(fromID).getValue().remove(toID);
 
-    }
     public int returnHash(String address) {
         if(!hash.containsKey(address)){
             hash.put(address, availableId);

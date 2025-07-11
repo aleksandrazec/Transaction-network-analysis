@@ -82,17 +82,14 @@ public class LinkabilityNetworkSequential extends GraphSequential {
             for (HashMap.Entry<Integer, SimpleEntry<String, Integer>> entry : ETN.adjacencyList.get(parentID).getValue().entrySet()) {
                 String child = entry.getValue().getKey();
                 if (currentDepth > 0) {
-                   //if (addEdge(rootAddress, entry.getValue().getKey(), currentDepth)) {
                     if (relevantAddresses.contains(child)){
                         try {
                             bw.write(rootAddress + "," + child + "," + currentDepth + "\n");
-//                            System.out.println(rootAddress + "," + child + "," + currentDepth);
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
                         weights[currentDepth]++;
                     }
-                    //}
 
                 }
                 if (!visited.contains(child)) {
