@@ -53,8 +53,22 @@ public class LinkabilityNetworkDistributed extends GraphDistributed{
         String partToBeWritten = sw.toString();
         byte[] partTobeWrittenBytes = serializeObject(partToBeWritten);
         byte[][] tobeWrittenBytes = new byte[MPI.COMM_WORLD.Size()][];
+        byte[] writingBuffer=null;
+        int[] writingSize= new int[1];
         String[] toBeWritten = new String[MPI.COMM_WORLD.Size()];
-        MPI.COMM_WORLD.Gather(partTobeWrittenBytes, 0, 1, MPI.BYTE, tobeWrittenBytes, 0, MPI.COMM_WORLD.Size(), MPI.BYTE, ROOT);
+        if(MPI.COMM_WORLD.Size()>1){
+            for (int i = 0; i < MPI.COMM_WORLD.Size(); i++) {
+                if(MPI.COMM_WORLD.Rank()==i){
+                    MPI.COMM_WORLD.Send(partTobeWrittenBytes, 0, 1, MPI.BYTE, ROOT, 1);
+                }
+                MPI.COMM_WORLD.Recv(writingBuffer, 0, 1, MPI.BYTE, i, 1);
+                tobeWrittenBytes[i] = writingBuffer;
+            }
+        }else{
+            tobeWrittenBytes[0] = partTobeWrittenBytes;
+        }
+
+//        MPI.COMM_WORLD.Gather(partTobeWrittenBytes, 0, 1, MPI.BYTE, tobeWrittenBytes, 0, MPI.COMM_WORLD.Size(), MPI.BYTE, ROOT);
         MPI.COMM_WORLD.Reduce(weights, 0, finalWeights, 0, 1, MPI.INT, MPI.SUM, ROOT);
         if (MPI.COMM_WORLD.Rank()==ROOT){
             try {
@@ -133,7 +147,7 @@ public class LinkabilityNetworkDistributed extends GraphDistributed{
 
     public void identifyRelevantAddresses(File f, int from, int to){
         String line;
-        HashSet<String> relevantAddresses=new HashSet<>();
+        relevantAddresses=new HashSet<>();
         try
         {
             BufferedReader br = new BufferedReader(new FileReader(f));
