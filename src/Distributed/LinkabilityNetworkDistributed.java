@@ -41,13 +41,15 @@ public class LinkabilityNetworkDistributed extends GraphDistributed{
         }
         sw = new StringWriter();
 
-        int total=adjacencyList.size();
+
+        int total=ETN.adjacencyList.size();
         int fromAddress=MPI.COMM_WORLD.Rank()*total/MPI.COMM_WORLD.Size();
         int toAddress=(MPI.COMM_WORLD.Rank()+1)*total/MPI.COMM_WORLD.Size();
-        if (total<toAddress){
+        if (MPI.COMM_WORLD.Rank()==MPI.COMM_WORLD.Size()-1){
             toAddress=total;
         }
-        breadthFirstSearchLoop(ETN, depth, from, to);
+
+        breadthFirstSearchLoop(ETN, depth, fromAddress, toAddress);
         MPI.COMM_WORLD.Barrier();
         System.out.println("broke second barrier");
         String partToBeWritten = sw.toString();
@@ -56,20 +58,43 @@ public class LinkabilityNetworkDistributed extends GraphDistributed{
         byte[] writingBuffer=null;
         int[] writingSize= new int[1];
         String[] toBeWritten = new String[MPI.COMM_WORLD.Size()];
-        if(MPI.COMM_WORLD.Size()>1){
-            for (int i = 0; i < MPI.COMM_WORLD.Size(); i++) {
-                if(MPI.COMM_WORLD.Rank()==i){
-                    MPI.COMM_WORLD.Send(partTobeWrittenBytes, 0, 1, MPI.BYTE, ROOT, 1);
+        if(MPI.COMM_WORLD.Size()!=1){
+            if (MPI.COMM_WORLD.Rank() == ROOT) {
+                for (int i = 0; i < MPI.COMM_WORLD.Size(); i++) {
+                    if (i == ROOT) {
+                        tobeWrittenBytes[i] = partTobeWrittenBytes;
+                    } else {
+                        int[] recvSize = new int[1];
+                        MPI.COMM_WORLD.Recv(recvSize, 0, 1, MPI.INT, i, 0);
+                        byte[] recvBuf = new byte[recvSize[0]];
+                        MPI.COMM_WORLD.Recv(recvBuf, 0, recvSize[0], MPI.BYTE, i, 1);
+                        tobeWrittenBytes[i] = recvBuf;
+                    }
                 }
-                MPI.COMM_WORLD.Recv(writingBuffer, 0, 1, MPI.BYTE, i, 1);
-                tobeWrittenBytes[i] = writingBuffer;
+            } else {
+                int[] sendSize = new int[]{partTobeWrittenBytes.length};
+                MPI.COMM_WORLD.Send(sendSize, 0, 1, MPI.INT, ROOT, 0);
+                MPI.COMM_WORLD.Send(partTobeWrittenBytes, 0, partTobeWrittenBytes.length, MPI.BYTE, ROOT, 1);
             }
-        }else{
+        }else {
             tobeWrittenBytes[0] = partTobeWrittenBytes;
         }
 
+
+//        if(MPI.COMM_WORLD.Size()>1){
+//            for (int i = 0; i < MPI.COMM_WORLD.Size(); i++) {
+//                if(MPI.COMM_WORLD.Rank()==i){
+//                    MPI.COMM_WORLD.Send(partTobeWrittenBytes, 0, 1, MPI.BYTE, ROOT, 1);
+//                }
+//                MPI.COMM_WORLD.Recv(writingBuffer, 0, 1, MPI.BYTE, i, 1);
+//                tobeWrittenBytes[i] = writingBuffer;
+//            }
+//        }else{
+//            tobeWrittenBytes[0] = partTobeWrittenBytes;
+//        }
+
 //        MPI.COMM_WORLD.Gather(partTobeWrittenBytes, 0, 1, MPI.BYTE, tobeWrittenBytes, 0, MPI.COMM_WORLD.Size(), MPI.BYTE, ROOT);
-        MPI.COMM_WORLD.Reduce(weights, 0, finalWeights, 0, 1, MPI.INT, MPI.SUM, ROOT);
+        MPI.COMM_WORLD.Reduce(weights, 0, finalWeights, 0, weights.length, MPI.INT, MPI.SUM, ROOT);
         if (MPI.COMM_WORLD.Rank()==ROOT){
             try {
                 bw=new BufferedWriter(new FileWriter(f));
@@ -128,7 +153,7 @@ public class LinkabilityNetworkDistributed extends GraphDistributed{
                         try {
                             sw.write(rootAddress + "," + child + "," + currentDepth + "\n");
                         }catch (Exception e){
-                            e.printStackTrace();
+                            throw new RuntimeException(e);
                         }
                         weights[currentDepth]++;
                     }
