@@ -23,6 +23,7 @@ public class GraphSequential {
         hash = new HashMap<>();
         createBlacklist(blacklist);
         readFromFile(ETNExample, columnFromETN, columnToETN);
+        System.out.println(adjacencyList.size());
     }
     public void readFromFile(File f, int from, int to){
         String line;

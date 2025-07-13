@@ -14,17 +14,19 @@ public class MPIMain {
     static int columnToNFT=5;
     static File fileToWrite=new File("linkabilityNetwork.csv");
     static int depth=3;
+    static final int ROOT=0;
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
         MPI.Init(args);
         GraphDistributed ETN= new GraphDistributed(blacklist, ETNExample, columnFromETN, columnToETN);
         MPI.COMM_WORLD.Barrier();
-        System.out.println("broke first barrier");
         LinkabilityNetworkDistributed l= new LinkabilityNetworkDistributed(ETN, depth, fileToWrite, NFTTransfers, columnFromNFT, columnToNFT);
         MPI.Finalize();
 
         long end = System.currentTimeMillis();
-        System.out.println("Run-time: " + (end - start) + "ms");
+        if (MPI.COMM_WORLD.Rank() == ROOT) {
+            System.out.println("Run-time: " + (end - start) + "ms");
+        }
     }
 
     public static byte[] serializeObject(Object object){

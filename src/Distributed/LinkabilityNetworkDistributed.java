@@ -9,8 +9,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import static Distributed.MPIMain.deserializeObject;
-import static Distributed.MPIMain.serializeObject;
+import static Distributed.MPIMain.*;
 
 public class LinkabilityNetworkDistributed extends GraphDistributed{
     int[] weights;
@@ -33,7 +32,6 @@ public class LinkabilityNetworkDistributed extends GraphDistributed{
         if (MPI.COMM_WORLD.Rank()!=ROOT){
             relevantAddresses= (HashSet<String>) deserializeObject(buffer);
         }
-        System.out.println("got relevant addressses");
         weights=new int[depth+1];
         int[] finalWeights=new int[depth+1];
         for (int i = 0; i < depth+1; i++) {
@@ -51,7 +49,7 @@ public class LinkabilityNetworkDistributed extends GraphDistributed{
 
         breadthFirstSearchLoop(ETN, depth, fromAddress, toAddress);
         MPI.COMM_WORLD.Barrier();
-        System.out.println("broke second barrier");
+
         String partToBeWritten = sw.toString();
         byte[] partTobeWrittenBytes = serializeObject(partToBeWritten);
         byte[][] tobeWrittenBytes = new byte[MPI.COMM_WORLD.Size()][];
@@ -80,31 +78,17 @@ public class LinkabilityNetworkDistributed extends GraphDistributed{
             tobeWrittenBytes[0] = partTobeWrittenBytes;
         }
 
-
-//        if(MPI.COMM_WORLD.Size()>1){
-//            for (int i = 0; i < MPI.COMM_WORLD.Size(); i++) {
-//                if(MPI.COMM_WORLD.Rank()==i){
-//                    MPI.COMM_WORLD.Send(partTobeWrittenBytes, 0, 1, MPI.BYTE, ROOT, 1);
-//                }
-//                MPI.COMM_WORLD.Recv(writingBuffer, 0, 1, MPI.BYTE, i, 1);
-//                tobeWrittenBytes[i] = writingBuffer;
-//            }
-//        }else{
-//            tobeWrittenBytes[0] = partTobeWrittenBytes;
-//        }
-
-//        MPI.COMM_WORLD.Gather(partTobeWrittenBytes, 0, 1, MPI.BYTE, tobeWrittenBytes, 0, MPI.COMM_WORLD.Size(), MPI.BYTE, ROOT);
         MPI.COMM_WORLD.Reduce(weights, 0, finalWeights, 0, weights.length, MPI.INT, MPI.SUM, ROOT);
-        if (MPI.COMM_WORLD.Rank()==ROOT){
+        if (MPI.COMM_WORLD.Rank()==ROOT) {
             try {
-                bw=new BufferedWriter(new FileWriter(f));
+                bw = new BufferedWriter(new FileWriter(f));
                 bw.write("addressFrom,addressTo,weight\n");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
 
-            for(int i=0;i<MPI.COMM_WORLD.Size();i++){
-                toBeWritten[i]=(String)deserializeObject(tobeWrittenBytes[i]);
+            for (int i = 0; i < MPI.COMM_WORLD.Size(); i++) {
+                toBeWritten[i] = (String) deserializeObject(tobeWrittenBytes[i]);
                 try {
                     bw.write(toBeWritten[i]);
                 } catch (IOException e) {
@@ -119,7 +103,7 @@ public class LinkabilityNetworkDistributed extends GraphDistributed{
             }
 
             for (int i = 1; i < finalWeights.length; i++) {
-                System.out.println("Number of links of weight "+i+" is: "+finalWeights[i]);
+                System.out.println("Number of links of weight " + i + " is: " + finalWeights[i]);
             }
         }
     }
@@ -130,7 +114,6 @@ public class LinkabilityNetworkDistributed extends GraphDistributed{
                 breadthFirstSearch(ETN, depth,ETN.adjacencyList.get(i).getKey());
             }
         }
-        System.out.println("done with breadth first search loop");
     }
 
     public void breadthFirstSearch(GraphDistributed ETN, int depth, String rootAddress){
@@ -145,7 +128,6 @@ public class LinkabilityNetworkDistributed extends GraphDistributed{
             String parent=currentPair.getKey();
             int parentID=ETN.returnHash(parent);
             currentDepth=currentPair.getValue();
-
             for (HashMap.Entry<Integer, SimpleEntry<String, Integer>> entry : ETN.adjacencyList.get(parentID).getValue().entrySet()) {
                 String child=entry.getValue().getKey();
                 if(currentDepth>0){

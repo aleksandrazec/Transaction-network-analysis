@@ -10,8 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import static Distributed.MPIMain.deserializeObject;
-import static Distributed.MPIMain.serializeObject;
+import static Distributed.MPIMain.*;
 
 public class GraphDistributed {
     HashSet<String> irrelevantAddresses = null;
@@ -19,7 +18,6 @@ public class GraphDistributed {
     HashMap<String,Integer> hash;
     int availableId=0;
 
-    static final int ROOT=0;
 
     public GraphDistributed(){
         hash=new HashMap<>();
@@ -31,7 +29,6 @@ public class GraphDistributed {
         adjacencyList=new ArrayList<>();
         createBlacklist(blacklist);
         readFromFile(ETNExample,columnFromETN,columnToETN);
-        System.out.println("done with read from file");
     }
 
     public void readFromFile(File f, int from, int to){
@@ -85,7 +82,7 @@ public class GraphDistributed {
                     content=content.substring(1,content.length()-1).replaceAll("\\s+","");
                     String[] addressArray = content.split(",");
                     for (String addressToRemove : addressArray ) {
-                       irrelevantAddresses.add(addressToRemove);
+                       irrelevantAddresses.add(addressToRemove.substring(1, addressToRemove.length() - 1));
                     }
                 }
             }
@@ -101,7 +98,6 @@ public class GraphDistributed {
         if (MPI.COMM_WORLD.Rank()!=ROOT){
             irrelevantAddresses= (HashSet<String>) deserializeObject(buffer);
         }
-        System.out.println("done with blacklist");
     }
     
 
