@@ -1,5 +1,3 @@
-package Distributed;
-
 import mpi.MPI;
 
 import java.io.*;
@@ -10,7 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import static Distributed.MPIMain.*;
 
 public class GraphDistributed {
     HashSet<String> irrelevantAddresses = null;
@@ -66,7 +63,7 @@ public class GraphDistributed {
         byte[] buffer= null;
         int[] size=new int[1];
 
-        if(MPI.COMM_WORLD.Rank()==ROOT){
+        if(MPI.COMM_WORLD.Rank()==MPIMain.ROOT){
             File[] blacklistFiles = blacklist.listFiles();
             irrelevantAddresses = new HashSet<>();
             if(blacklistFiles!=null) {
@@ -85,16 +82,16 @@ public class GraphDistributed {
                 }
             }
             
-            buffer= serializeObject(irrelevantAddresses);
+            buffer= MPIMain.serializeObject(irrelevantAddresses);
             size[0]=buffer.length;
         }
         MPI.COMM_WORLD.Bcast(size, 0, 1, MPI.INT, 0);
-        if(MPI.COMM_WORLD.Rank()!=ROOT){
+        if(MPI.COMM_WORLD.Rank()!=MPIMain.ROOT){
             buffer=new byte[size[0]];
         }
         MPI.COMM_WORLD.Bcast(buffer, 0, size[0], MPI.BYTE, 0);
-        if (MPI.COMM_WORLD.Rank()!=ROOT){
-            irrelevantAddresses= (HashSet<String>) deserializeObject(buffer);
+        if (MPI.COMM_WORLD.Rank()!=MPIMain.ROOT){
+            irrelevantAddresses= (HashSet<String>) MPIMain.deserializeObject(buffer);
         }
     }
     

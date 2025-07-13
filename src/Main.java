@@ -13,7 +13,7 @@ public class Main {
     static int columnFromNFT=4;
     static int columnToNFT=5;
     static File fileToWrite=new File("./linkabilityNetwork.csv");
-    static int depth=0;
+    public static int depth=0;
     enum Mode{
         Sequential,
         Parallel,
@@ -70,9 +70,9 @@ public class Main {
                         "javac",
                         "-cp", "C:\\Users\\Sanja\\Desktop\\uni\\mpj\\lib\\mpj.jar",
                         "-d", "out/production/Transaction network analasys 2.0",
-                        "src/Distributed/GraphDistributed.java",
-                        "src/Distributed/LinkabilityNetworkDistributed.java",
-                        "src/Distributed/MPIMain.java"
+                        "src/GraphDistributed.java",
+                        "src/LinkabilityNetworkDistributed.java",
+                        "src/MPIMain.java"
                 );
 
                 pbComp.redirectErrorStream(true);
@@ -86,9 +86,10 @@ public class Main {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
+                String depthArg= String.valueOf(depth);
                 ProcessBuilder pb = new ProcessBuilder(
                         "bash", "-c",
-                        "mpjrun.sh -np 2 -cp 'out/production/Transaction network analasys 2.0' Distributed.MPIMain"
+                        "mpjrun.sh -np 2 -cp 'out/production/Transaction network analasys 2.0' MPIMain", depthArg
                 );
                 pb.redirectErrorStream(true);
 

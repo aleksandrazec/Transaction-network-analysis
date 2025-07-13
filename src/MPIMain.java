@@ -1,5 +1,3 @@
-package Distributed;
-
 import mpi.MPI;
 import java.io.*;
 
@@ -12,11 +10,13 @@ public class MPIMain {
     static int columnFromNFT=4;
     static int columnToNFT=5;
     static File fileToWrite=new File("linkabilityNetwork.csv");
-    static int depth=3;
+    static int depth=0;
     static final int ROOT=0;
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
         MPI.Init(args);
+        String depthArg=args[0];
+        depth=Integer.parseInt(depthArg);
         GraphDistributed ETN= new GraphDistributed();
         ETN.createBlacklist(blacklist);
         ETN.readFromFile(ETNExample, columnFromETN, columnToETN);
