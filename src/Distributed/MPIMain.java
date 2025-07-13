@@ -1,7 +1,6 @@
 package Distributed;
 
 import mpi.MPI;
-
 import java.io.*;
 
 public class MPIMain {
@@ -18,9 +17,12 @@ public class MPIMain {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
         MPI.Init(args);
-        GraphDistributed ETN= new GraphDistributed(blacklist, ETNExample, columnFromETN, columnToETN);
+        GraphDistributed ETN= new GraphDistributed();
+        ETN.createBlacklist(blacklist);
+        ETN.readFromFile(ETNExample, columnFromETN, columnToETN);
         MPI.COMM_WORLD.Barrier();
-        LinkabilityNetworkDistributed l= new LinkabilityNetworkDistributed(ETN, depth, fileToWrite, NFTTransfers, columnFromNFT, columnToNFT);
+        LinkabilityNetworkDistributed l= new LinkabilityNetworkDistributed();
+        l.buildLinkabilityNetworkDistributed(ETN, depth, fileToWrite, NFTTransfers, columnFromNFT, columnToNFT);
         MPI.Finalize();
 
         long end = System.currentTimeMillis();

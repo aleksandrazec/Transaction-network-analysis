@@ -1,6 +1,7 @@
-import Distributed.GraphDistributed;
-
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Scanner;
 
 public class Main {
@@ -12,6 +13,7 @@ public class Main {
     static int columnFromNFT=4;
     static int columnToNFT=5;
     static File fileToWrite=new File("./linkabilityNetwork.csv");
+    static int depth=0;
     enum Mode{
         Sequential,
         Parallel,
@@ -41,7 +43,7 @@ public class Main {
             }
         }
         System.out.println("Specify maximum depth od ETN traversal:");
-        int depth = 0;
+        depth = 0;
         try {
             depth = s.nextInt();
         } catch (Exception e) {
@@ -63,12 +65,48 @@ public class Main {
                 System.out.println("Run-time: " + (end - start) + "ms");
             }
             case Distributed -> {
-                long start = System.currentTimeMillis();
-//                GraphDistributed ETN=new GraphDistributed(args, blacklist);
-                long end = System.currentTimeMillis();
-                System.out.println("Run-time: " + (end - start) + "ms");
+
+                ProcessBuilder pbComp = new ProcessBuilder(
+                        "javac",
+                        "-cp", "C:\\Users\\Sanja\\Desktop\\uni\\mpj\\lib\\mpj.jar",
+                        "-d", "out/production/Transaction network analasys 2.0",
+                        "src/Distributed/GraphDistributed.java",
+                        "src/Distributed/LinkabilityNetworkDistributed.java",
+                        "src/Distributed/MPIMain.java"
+                );
+
+                pbComp.redirectErrorStream(true);
+                try {
+                    Process process = pbComp.start();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        System.out.println(line);
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                ProcessBuilder pb = new ProcessBuilder(
+                        "bash", "-c",
+                        "mpjrun.sh -np 2 -cp 'out/production/Transaction network analasys 2.0' Distributed.MPIMain"
+                );
+                pb.redirectErrorStream(true);
+
+                try {
+                    Process process = pb.start();
+
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        System.out.println(line);
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
     }
+
 }

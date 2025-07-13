@@ -27,8 +27,6 @@ public class GraphDistributed {
     public GraphDistributed(File blacklist, File ETNExample, int columnFromETN, int columnToETN) {
         hash=new HashMap<>();
         adjacencyList=new ArrayList<>();
-        createBlacklist(blacklist);
-        readFromFile(ETNExample,columnFromETN,columnToETN);
     }
 
     public void readFromFile(File f, int from, int to){
@@ -63,7 +61,7 @@ public class GraphDistributed {
             adjacencyList.get(fromID).getValue().put(toID, new SimpleEntry<>(to, weight));
         }
     }
-
+    @SuppressWarnings("unchecked")
     public void createBlacklist(File blacklist) {
         byte[] buffer= null;
         int[] size=new int[1];

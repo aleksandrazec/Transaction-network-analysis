@@ -16,7 +16,8 @@ public class LinkabilityNetworkDistributed extends GraphDistributed{
     HashSet<String> relevantAddresses=null;
     BufferedWriter bw;
     StringWriter sw;
-    public LinkabilityNetworkDistributed(GraphDistributed ETN, int depth, File f, File NFT, int from, int to) {
+    @SuppressWarnings("unchecked")
+    public void buildLinkabilityNetworkDistributed(GraphDistributed ETN, int depth, File f, File NFT, int from, int to) {
         byte[] buffer= null;
         int[] size=new int[1];
         if(MPI.COMM_WORLD.Rank()==ROOT){
