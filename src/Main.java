@@ -5,20 +5,24 @@ import java.io.InputStreamReader;
 import java.util.Scanner;
 
 public class Main {
-    static File ETNExample=new File("./linkabilityNetworksData/prog3ETNsample.csv");
-    static File blacklist=new File("./linkabilityNetworksData/blacklist");
-    static File NFTTransfers=new File("./linkabilityNetworksData/boredapeyachtclub.csv");
-    static int columnFromETN=5;
-    static int columnToETN=6;
-    static int columnFromNFT=4;
-    static int columnToNFT=5;
-    static File fileToWrite=new File("./linkabilityNetwork.csv");
-    public static int depth=0;
+    static final File ETNExample=new File("./linkabilityNetworksData/prog3ETNsample.csv");
+    static final File blacklist=new File("./linkabilityNetworksData/blacklist");
+    static final File NFTTransfers=new File("./linkabilityNetworksData/boredapeyachtclub.csv");
+    static final int columnFromETN=5;
+    static final int columnToETN=6;
+    static final int columnFromNFT=4;
+    static final int columnToNFT=5;
+    static final File fileToWrite=new File("./linkabilityNetwork.csv");
+
+    static int depth=0;
+    static int numOfDistributedMachines=2;
+
     enum Mode{
         Sequential,
         Parallel,
         Distributed,
     }
+
     public static void main(String[] args) {
         System.out.println("TRANSACTION NETWORK ANALYSIS");
         System.out.println("Specify which mode you would prefer by typing in the corresponding number:");
@@ -53,7 +57,7 @@ public class Main {
             case Sequential -> {
                 long start = System.currentTimeMillis();
                 GraphSequential ETN = new GraphSequential();
-                ETN.buildGraphSequential(blacklist,ETNExample, columnFromETN, columnToETN);
+                ETN.buildGraphSequential(blacklist, ETNExample, columnFromETN, columnToETN);
                 LinkabilityNetworkSequential l = new LinkabilityNetworkSequential();
                 l.buildLinkabilityNetworkSequential(ETN, depth, fileToWrite, NFTTransfers, columnFromNFT, columnToNFT);
                 long end = System.currentTimeMillis();
@@ -92,7 +96,7 @@ public class Main {
                 }
                 ProcessBuilder pb = new ProcessBuilder(
                         "bash", "-c",
-                        "mpjrun.sh -np 2 -cp 'out/production/Transaction network analysis' MPIMain "+depth
+                        "mpjrun.sh -np "+numOfDistributedMachines+" -cp 'out/production/Transaction network analysis' MPIMain "+depth
                 );
                 pb.redirectErrorStream(true);
 
