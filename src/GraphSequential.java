@@ -18,12 +18,9 @@ public class GraphSequential {
         adjacencyList = new ArrayList<>();
         hash = new HashMap<>();
     }
-    public GraphSequential(File blacklist, File ETNExample, int columnFromETN, int columnToETN){
-        adjacencyList = new ArrayList<>();
-        hash = new HashMap<>();
+    public void buildGraphSequential(File blacklist, File ETNExample, int columnFromETN, int columnToETN){
         createBlacklist(blacklist);
         readFromFile(ETNExample, columnFromETN, columnToETN);
-        System.out.println(adjacencyList.size());
     }
     public void readFromFile(File f, int from, int to){
         String line;

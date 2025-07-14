@@ -21,15 +21,12 @@ public class GraphParallel {
     static Semaphore blacklistSemaphore;
     static Semaphore graphSemaphore;
     int lines = 0;
-
     int blacklistSize;
     public GraphParallel(){
         adjacencyList = new ArrayList<>();
         hash = new HashMap<>();
     }
-    public GraphParallel(File blacklist, File ETNExample, int columnFromETN, int columnToETN){
-        adjacencyList = new ArrayList<>();
-        hash = new HashMap<>();
+    public void buildGraphParallel(File blacklist, File ETNExample, int columnFromETN, int columnToETN){
         createBlacklist(blacklist);
         try {
             blacklistSemaphore.acquire(blacklistSize);

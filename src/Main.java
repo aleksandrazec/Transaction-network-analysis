@@ -52,15 +52,19 @@ public class Main {
         switch (currentMode){
             case Sequential -> {
                 long start = System.currentTimeMillis();
-                GraphSequential ETN = new GraphSequential(blacklist,ETNExample, columnFromETN, columnToETN);
-                LinkabilityNetworkSequential l = new LinkabilityNetworkSequential(ETN, depth, fileToWrite, NFTTransfers, columnFromNFT, columnToNFT);
+                GraphSequential ETN = new GraphSequential();
+                ETN.buildGraphSequential(blacklist,ETNExample, columnFromETN, columnToETN);
+                LinkabilityNetworkSequential l = new LinkabilityNetworkSequential();
+                l.buildLinkabilityNetworkSequential(ETN, depth, fileToWrite, NFTTransfers, columnFromNFT, columnToNFT);
                 long end = System.currentTimeMillis();
                 System.out.println("Run-time: " + (end - start) + "ms");
             }
             case Parallel -> {
                 long start = System.currentTimeMillis();
-                GraphParallel ETN = new GraphParallel(blacklist, ETNExample, columnFromETN, columnToETN);
-                LinkabilityNetworkParallel l=new LinkabilityNetworkParallel(ETN, depth,  fileToWrite, NFTTransfers, columnFromNFT, columnToNFT);
+                GraphParallel ETN = new GraphParallel();
+                ETN.buildGraphParallel(blacklist, ETNExample, columnFromETN, columnToETN);
+                LinkabilityNetworkParallel l=new LinkabilityNetworkParallel();
+                l.buildLinkabilityNetworkParallel(ETN, depth,  fileToWrite, NFTTransfers, columnFromNFT, columnToNFT);
                 long end = System.currentTimeMillis();
                 System.out.println("Run-time: " + (end - start) + "ms");
             }
@@ -86,10 +90,9 @@ public class Main {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                String depthArg= String.valueOf(depth);
                 ProcessBuilder pb = new ProcessBuilder(
                         "bash", "-c",
-                        "mpjrun.sh -np 2 -cp 'out/production/Transaction network analasys 2.0' MPIMain "+depthArg
+                        "mpjrun.sh -np 2 -cp 'out/production/Transaction network analasys 2.0' MPIMain "+depth
                 );
                 pb.redirectErrorStream(true);
 
@@ -103,7 +106,7 @@ public class Main {
                     }
 
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
             }
         }

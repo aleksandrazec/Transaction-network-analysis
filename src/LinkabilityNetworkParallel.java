@@ -9,7 +9,7 @@ public class LinkabilityNetworkParallel extends GraphParallel{
     HashSet<String> relevantAddresses=new HashSet<>();
     static Semaphore linkabilitySemaphore;
     final Object bwLock=new Object();
-    public LinkabilityNetworkParallel(GraphParallel ETN, int depth, File f, File NFT, int from, int to) {
+    public void buildLinkabilityNetworkParallel(GraphParallel ETN, int depth, File f, File NFT, int from, int to) {
         identifyRelevantAddresses(NFT, from, to);
 
         try {

@@ -9,9 +9,7 @@ public class LinkabilityNetworkSequential extends GraphSequential {
     BufferedWriter bw;
     int[] weights;
     HashSet<String> relevantAddresses=new HashSet<>();
-    public LinkabilityNetworkSequential(GraphSequential ETN, int depth, File f, File NFT, int from, int to){
-        super();
-
+    public void buildLinkabilityNetworkSequential(GraphSequential ETN, int depth, File f, File NFT, int from, int to){
         identifyRelevantAddresses(NFT, from, to);
 
         try {

@@ -31,7 +31,7 @@ public class LinkabilityNetworkDistributed extends GraphDistributed{
             relevantAddresses= (HashSet<String>) MPIMain.deserializeObject(buffer);
         }
         weights=new int[depth+1];
-        int[] finalWeigths=new int[depth+1];
+        int[] finalWeights=new int[depth+1];
         for (int i = 0; i < depth+1; i++) {
             weights[i]=0;
         }
@@ -50,8 +50,6 @@ public class LinkabilityNetworkDistributed extends GraphDistributed{
         String partToBeWritten = sw.toString();
         byte[] partTobeWrittenBytes = MPIMain.serializeObject(partToBeWritten);
         byte[][] tobeWrittenBytes = new byte[MPI.COMM_WORLD.Size()][];
-        byte[] writingBuffer=null;
-        int[] writingSize= new int[1];
         String[] toBeWritten = new String[MPI.COMM_WORLD.Size()];
         if(MPI.COMM_WORLD.Size()!=1){
             if (MPI.COMM_WORLD.Rank() == MPIMain.ROOT) {
@@ -76,7 +74,7 @@ public class LinkabilityNetworkDistributed extends GraphDistributed{
             tobeWrittenBytes[0] = partTobeWrittenBytes;
         }
 
-        MPI.COMM_WORLD.Reduce(weights, 0, finalWeigths, 0, depth, MPI.INT, MPI.SUM, MPIMain.ROOT);
+        MPI.COMM_WORLD.Reduce(weights, 0, finalWeights, 0, depth+1, MPI.INT, MPI.SUM, MPIMain.ROOT);
         if (MPI.COMM_WORLD.Rank()==MPIMain.ROOT) {
             try {
                 bw = new BufferedWriter(new FileWriter(f));
@@ -100,8 +98,8 @@ public class LinkabilityNetworkDistributed extends GraphDistributed{
                 throw new RuntimeException(e);
             }
 
-            for (int i = 1; i < finalWeigths.length; i++) {
-                System.out.println("Number of links of weight " + i + " is: " + finalWeigths[i]);
+            for (int i = 1; i < finalWeights.length; i++) {
+                System.out.println("Number of links of weight " + i + " is: " + finalWeights[i]);
             }
         }
     }

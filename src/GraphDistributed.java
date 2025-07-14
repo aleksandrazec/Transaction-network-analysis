@@ -21,9 +21,9 @@ public class GraphDistributed {
         adjacencyList=new ArrayList<>();
     }
 
-    public GraphDistributed(File blacklist, File ETNExample, int columnFromETN, int columnToETN) {
-        hash=new HashMap<>();
-        adjacencyList=new ArrayList<>();
+    public void buildGraphDistributed(File blacklist, File ETNExample, int columnFromETN, int columnToETN) {
+        createBlacklist(blacklist);
+        readFromFile(ETNExample, columnFromETN, columnToETN);
     }
 
     public void readFromFile(File f, int from, int to){

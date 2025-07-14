@@ -18,13 +18,11 @@ public class MPIMain {
         depth=Integer.parseInt(depthArg);
         MPI.Init(args);
         GraphDistributed ETN= new GraphDistributed();
-        ETN.createBlacklist(blacklist);
-        ETN.readFromFile(ETNExample, columnFromETN, columnToETN);
+        ETN.buildGraphDistributed(blacklist,ETNExample, columnFromETN, columnToETN);
         MPI.COMM_WORLD.Barrier();
         LinkabilityNetworkDistributed l= new LinkabilityNetworkDistributed();
         l.buildLinkabilityNetworkDistributed(ETN, depth, fileToWrite, NFTTransfers, columnFromNFT, columnToNFT);
         MPI.Finalize();
-
         long end = System.currentTimeMillis();
         if (MPI.COMM_WORLD.Rank() == ROOT) {
             System.out.println("Run-time: " + (end - start) + "ms");
@@ -46,7 +44,7 @@ public class MPIMain {
         return baos.toByteArray();
     }
     public static Object deserializeObject(byte[] bytes){
-        Object object=null;
+        Object object;
         ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
         try {
             ObjectInputStream ois = new ObjectInputStream(bis);
