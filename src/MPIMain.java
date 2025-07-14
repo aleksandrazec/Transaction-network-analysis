@@ -14,9 +14,9 @@ public class MPIMain {
     static final int ROOT=0;
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        MPI.Init(args);
-        String depthArg=args[0];
+        String depthArg=args[args.length-1];
         depth=Integer.parseInt(depthArg);
+        MPI.Init(args);
         GraphDistributed ETN= new GraphDistributed();
         ETN.createBlacklist(blacklist);
         ETN.readFromFile(ETNExample, columnFromETN, columnToETN);

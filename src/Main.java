@@ -68,7 +68,7 @@ public class Main {
 
                 ProcessBuilder pbComp = new ProcessBuilder(
                         "javac",
-                        "-cp", "C:\\Users\\Sanja\\Desktop\\uni\\mpj\\lib\\mpj.jar",
+                        "-cp", "..\\mpj\\lib\\mpj.jar",
                         "-d", "out/production/Transaction network analasys 2.0",
                         "src/GraphDistributed.java",
                         "src/LinkabilityNetworkDistributed.java",
@@ -89,7 +89,7 @@ public class Main {
                 String depthArg= String.valueOf(depth);
                 ProcessBuilder pb = new ProcessBuilder(
                         "bash", "-c",
-                        "mpjrun.sh -np 2 -cp 'out/production/Transaction network analasys 2.0' MPIMain", depthArg
+                        "mpjrun.sh -np 2 -cp 'out/production/Transaction network analasys 2.0' MPIMain "+depthArg
                 );
                 pb.redirectErrorStream(true);
 

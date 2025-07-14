@@ -31,12 +31,11 @@ public class LinkabilityNetworkDistributed extends GraphDistributed{
             relevantAddresses= (HashSet<String>) MPIMain.deserializeObject(buffer);
         }
         weights=new int[depth+1];
-        int[] finalWeights=new int[depth+1];
+        int[] finalWeigths=new int[depth+1];
         for (int i = 0; i < depth+1; i++) {
             weights[i]=0;
         }
         sw = new StringWriter();
-
 
         int total=ETN.adjacencyList.size();
         int fromAddress=MPI.COMM_WORLD.Rank()*total/MPI.COMM_WORLD.Size();
@@ -62,13 +61,14 @@ public class LinkabilityNetworkDistributed extends GraphDistributed{
                     } else {
                         int[] recvSize = new int[1];
                         MPI.COMM_WORLD.Recv(recvSize, 0, 1, MPI.INT, i, 0);
-                        byte[] recvBuf = new byte[recvSize[0]];
-                        MPI.COMM_WORLD.Recv(recvBuf, 0, recvSize[0], MPI.BYTE, i, 1);
-                        tobeWrittenBytes[i] = recvBuf;
+                        byte[] recvBuffer = new byte[recvSize[0]];
+                        MPI.COMM_WORLD.Recv(recvBuffer, 0, recvSize[0], MPI.BYTE, i, 1);
+                        tobeWrittenBytes[i] = recvBuffer;
                     }
                 }
             } else {
-                int[] sendSize = new int[]{partTobeWrittenBytes.length};
+                int[] sendSize = new int[1];
+                sendSize[0]=partTobeWrittenBytes.length;
                 MPI.COMM_WORLD.Send(sendSize, 0, 1, MPI.INT, MPIMain.ROOT, 0);
                 MPI.COMM_WORLD.Send(partTobeWrittenBytes, 0, partTobeWrittenBytes.length, MPI.BYTE, MPIMain.ROOT, 1);
             }
@@ -76,7 +76,7 @@ public class LinkabilityNetworkDistributed extends GraphDistributed{
             tobeWrittenBytes[0] = partTobeWrittenBytes;
         }
 
-        MPI.COMM_WORLD.Reduce(weights, 0, finalWeights, 0, finalWeights.length, MPI.INT, MPI.SUM, MPIMain.ROOT);
+        MPI.COMM_WORLD.Reduce(weights, 0, finalWeigths, 0, depth, MPI.INT, MPI.SUM, MPIMain.ROOT);
         if (MPI.COMM_WORLD.Rank()==MPIMain.ROOT) {
             try {
                 bw = new BufferedWriter(new FileWriter(f));
@@ -100,8 +100,8 @@ public class LinkabilityNetworkDistributed extends GraphDistributed{
                 throw new RuntimeException(e);
             }
 
-            for (int i = 1; i < finalWeights.length; i++) {
-                System.out.println("Number of links of weight " + i + " is: " + finalWeights[i]);
+            for (int i = 1; i < finalWeigths.length; i++) {
+                System.out.println("Number of links of weight " + i + " is: " + finalWeigths[i]);
             }
         }
     }
