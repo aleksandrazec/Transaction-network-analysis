@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.AbstractMap.SimpleEntry;
 
-public class LinkabilityNetworkSequential extends GraphSequential {
+public class LinkabilityNetworkSequential{
     BufferedWriter bw;
     int[] weights;
     HashSet<String> relevantAddresses=new HashSet<>();
@@ -77,8 +77,8 @@ public class LinkabilityNetworkSequential extends GraphSequential {
             int parentID=ETN.returnHash(parent);
             currentDepth=currentPair.getValue();
 
-            for (HashMap.Entry<Integer, SimpleEntry<String, Integer>> entry : ETN.adjacencyList.get(parentID).getValue().entrySet()) {
-                String child = entry.getValue().getKey();
+            for (HashMap.Entry<Integer, String> entry : ETN.adjacencyList.get(parentID).getValue().entrySet()) {
+                String child = entry.getValue();
                 if (currentDepth > 0) {
                     if (relevantAddresses.contains(child)){
                         try {

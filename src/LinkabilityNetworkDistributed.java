@@ -5,7 +5,7 @@ import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
 
 
-public class LinkabilityNetworkDistributed extends GraphDistributed{
+public class LinkabilityNetworkDistributed{
     int[] weights;
     HashSet<String> relevantAddresses=null;
     BufferedWriter bw;
@@ -135,8 +135,8 @@ public class LinkabilityNetworkDistributed extends GraphDistributed{
             String parent=currentPair.getKey();
             int parentID=ETN.returnHash(parent);
             currentDepth=currentPair.getValue();
-            for (HashMap.Entry<Integer, SimpleEntry<String, Integer>> entry : ETN.adjacencyList.get(parentID).getValue().entrySet()) {
-                String child=entry.getValue().getKey();
+            for (HashMap.Entry<Integer, String> entry : ETN.adjacencyList.get(parentID).getValue().entrySet()) {
+                String child=entry.getValue();
                 if(currentDepth>0){
                     if(relevantAddresses.contains(child)){
                         try {

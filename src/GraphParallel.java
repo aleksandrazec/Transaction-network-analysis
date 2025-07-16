@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 
 public class GraphParallel {
     int availableId=0;
-    public ArrayList<SimpleEntry<String, HashMap<Integer, SimpleEntry<String, Integer>>>> adjacencyList;
+    public ArrayList<SimpleEntry<String, HashMap<Integer, String>>> adjacencyList;
     HashMap<String,Integer> hash;
     final Object hashLock = new Object();
     final Object addressLock=new Object();
@@ -63,7 +63,7 @@ public class GraphParallel {
             while ((line = br.readLine()) != null)
             {
                 String[] values = line.split(",");
-                threadPool.submit(new EdgeParallel(values[from],values[to],0, this));
+                threadPool.submit(new EdgeParallel(values[from],values[to], this));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -89,9 +89,9 @@ public class GraphParallel {
             return hash.get(address);
         }
     }
-    public void addEdge(int fromID, int toID, String to, int weight){
+    public void addEdge(int fromID, int toID, String to){
         synchronized (addressLock){
-            adjacencyList.get(fromID).getValue().put(toID, new SimpleEntry<>(to, weight));
+            adjacencyList.get(fromID).getValue().put(toID, to);
         }
     }
     public void addIrrelevantAddress(String addressToRemove){

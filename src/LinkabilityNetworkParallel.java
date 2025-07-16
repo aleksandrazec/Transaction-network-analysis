@@ -3,7 +3,7 @@ import java.util.HashSet;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class LinkabilityNetworkParallel extends GraphParallel{
+public class LinkabilityNetworkParallel{
     BufferedWriter bw;
     AtomicInteger[] weights;
     HashSet<String> relevantAddresses=new HashSet<>();
@@ -32,7 +32,7 @@ public class LinkabilityNetworkParallel extends GraphParallel{
         }
         for(int i = 0; i< ETN.adjacencyList.size(); i++){
             if(relevantAddresses.contains(ETN.adjacencyList.get(i).getKey())){
-                threadPool.submit(new BreadthFirstSearchParallel(ETN, depth, ETN.adjacencyList.get(i).getKey(), this));
+                GraphParallel.threadPool.submit(new BreadthFirstSearchParallel(ETN, depth, ETN.adjacencyList.get(i).getKey(), this));
             }else {
                 linkabilitySemaphore.release();
             }

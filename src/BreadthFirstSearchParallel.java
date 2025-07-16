@@ -29,8 +29,8 @@ public class BreadthFirstSearchParallel implements Runnable{
             int parentID=ETN.returnHash(parent);
             currentDepth=currentPair.getValue();
 
-            for (HashMap.Entry<Integer, SimpleEntry<String, Integer>> entry : ETN.adjacencyList.get(parentID).getValue().entrySet()) {
-                String child=entry.getValue().getKey();
+            for (HashMap.Entry<Integer, String> entry : ETN.adjacencyList.get(parentID).getValue().entrySet()) {
+                String child=entry.getValue();
                 if(currentDepth>0){
                     if(linkability.isRelevantAddress(child)){
                         linkability.writeLine(rootAddress, child, currentDepth);

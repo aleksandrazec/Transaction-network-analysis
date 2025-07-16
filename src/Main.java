@@ -77,7 +77,7 @@ public class Main {
                 ProcessBuilder pbComp = new ProcessBuilder(
                         "javac",
                         "-cp", "..\\mpj\\lib\\mpj.jar",
-                        "-d", "out/production/Transaction network analysis",
+                        "-d", "out",
                         "src/GraphDistributed.java",
                         "src/LinkabilityNetworkDistributed.java",
                         "src/MPIMain.java"
@@ -96,7 +96,7 @@ public class Main {
                 }
                 ProcessBuilder pb = new ProcessBuilder(
                         "bash", "-c",
-                        "mpjrun.sh -np "+numOfDistributedMachines+" -cp 'out/production/Transaction network analysis' MPIMain "+depth
+                        "mpjrun.sh -np "+numOfDistributedMachines+" -cp 'out' MPIMain "+depth
                 );
                 pb.redirectErrorStream(true);
 

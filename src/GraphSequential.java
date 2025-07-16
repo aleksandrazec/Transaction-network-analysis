@@ -11,7 +11,7 @@ import java.util.HashSet;
 
 public class GraphSequential {
     int availableId=0;
-    ArrayList<SimpleEntry<String,HashMap<Integer,SimpleEntry<String, Integer>>>> adjacencyList;
+    ArrayList<SimpleEntry<String,HashMap<Integer, String>>> adjacencyList;
     HashMap<String,Integer> hash;
     HashSet<String> irrelevantAddresses=new HashSet<>();
     public GraphSequential(){
@@ -30,7 +30,7 @@ public class GraphSequential {
             while ((line = br.readLine()) != null)
             {
                 String[] values = line.split(",");
-                addEdge(values[from],values[to], 0);
+                addEdge(values[from],values[to]);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -54,11 +54,11 @@ public class GraphSequential {
             }
         }
     }
-    public void addEdge(String from, String to, int weight){
+    public void addEdge(String from, String to){
         if (!irrelevantAddresses.contains(from) && !irrelevantAddresses.contains(to)){
             int fromID=returnHash(from);
             int toID=returnHash(to);
-            adjacencyList.get(fromID).getValue().put(toID,new SimpleEntry<>(to, weight));
+            adjacencyList.get(fromID).getValue().put(toID, to);
         }
     }
 
