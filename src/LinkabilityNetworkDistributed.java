@@ -1,11 +1,8 @@
 import mpi.MPI;
 
 import java.io.*;
+import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
 
 
 public class LinkabilityNetworkDistributed extends GraphDistributed{
@@ -13,6 +10,7 @@ public class LinkabilityNetworkDistributed extends GraphDistributed{
     HashSet<String> relevantAddresses=null;
     BufferedWriter bw;
     StringWriter sw;
+    String swString="";
     @SuppressWarnings("unchecked")
     public void buildLinkabilityNetworkDistributed(GraphDistributed ETN, int depth, File f, File NFT, int from, int to) {
         byte[] buffer= null;
@@ -43,12 +41,19 @@ public class LinkabilityNetworkDistributed extends GraphDistributed{
         if (MPI.COMM_WORLD.Rank()==MPI.COMM_WORLD.Size()-1){
             toAddress=total;
         }
+        if (MPI.COMM_WORLD.Rank()==MPIMain.ROOT) {
+            try {
+                bw = new BufferedWriter(new FileWriter(f));
+                bw.write("addressFrom,addressTo,weight\n");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         breadthFirstSearchLoop(ETN, depth, fromAddress, toAddress);
         MPI.COMM_WORLD.Barrier();
 
-        String partToBeWritten = sw.toString();
-        byte[] partTobeWrittenBytes = MPIMain.serializeObject(partToBeWritten);
+        byte[] partTobeWrittenBytes = MPIMain.serializeObject(swString);
         byte[][] tobeWrittenBytes = new byte[MPI.COMM_WORLD.Size()][];
         String[] toBeWritten = new String[MPI.COMM_WORLD.Size()];
         if(MPI.COMM_WORLD.Size()!=1){
@@ -82,7 +87,6 @@ public class LinkabilityNetworkDistributed extends GraphDistributed{
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-
             for (int i = 0; i < MPI.COMM_WORLD.Size(); i++) {
                 toBeWritten[i] = (String) MPIMain.deserializeObject(tobeWrittenBytes[i]);
                 try {
@@ -108,7 +112,14 @@ public class LinkabilityNetworkDistributed extends GraphDistributed{
         for (int i = from; i < to; i++) {
             if(relevantAddresses.contains(ETN.adjacencyList.get(i).getKey())){
                 breadthFirstSearch(ETN, depth,ETN.adjacencyList.get(i).getKey());
+                swString.concat(sw.toString());
+                sw.getBuffer().setLength(0);
             }
+        }
+        if(sw.toString()!=null){
+            swString.concat(sw.toString());
+            sw.getBuffer().setLength(0);
+            sw.flush();
         }
     }
 
